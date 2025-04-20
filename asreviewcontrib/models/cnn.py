@@ -19,7 +19,7 @@ from tensorflow.keras import Sequential
 from tensorflow.keras import layers
 from tensorflow.keras import activations
 from tensorflow.keras import optimizers
-from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
+from scikeras.wrappers import KerasClassifier
 from tensorflow.keras import callbacks
 from tensorflow.keras import backend
 
