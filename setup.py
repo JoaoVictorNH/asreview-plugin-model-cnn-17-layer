@@ -19,7 +19,7 @@ setup(
     packages=find_namespace_packages(include=['asreviewcontrib.*']),
     python_requires='~=3.6',
     install_requires=[
-        'scikit-learn',
+        'sklearn',
         'asreview>=0.13',
         'tensorflow',
         'scipy'
