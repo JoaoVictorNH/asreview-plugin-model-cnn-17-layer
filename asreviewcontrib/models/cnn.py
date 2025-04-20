@@ -14,41 +14,17 @@
 
 from math import ceil
 import tensorflow as tf
-import numpy as np
-from sklearn.base import BaseEstimator, ClassifierMixin
-import scipy.sparse as sp
+import scikeras
 
 from tensorflow.keras import Sequential
 from tensorflow.keras import layers
 from tensorflow.keras import activations
 from tensorflow.keras import optimizers
+from scikeras.wrappers import KerasClassifier
 from tensorflow.keras import callbacks
 from tensorflow.keras import backend
 
 from asreview.models.classifiers.base import BaseTrainClassifier
-
-
-# Custom KerasClassifier implementation since the wrapper is no longer available
-class CustomKerasClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, model_fn, **kwargs):
-        self.model_fn = model_fn
-        self.kwargs = kwargs
-        self.model = None
-        
-    def fit(self, X, y, **kwargs):
-        if self.model is None:
-            self.model = self.model_fn()
-        self.model.fit(X, y, **kwargs)
-        return self
-        
-    def predict_proba(self, X):
-        if self.model is None:
-            self.model = self.model_fn()
-        pred = self.model.predict(X, verbose=0)
-        if len(pred.shape) == 1:
-            # Binary classification
-            return np.vstack([1-pred, pred]).T
-        return pred
 
 
 class POWER_CNN(BaseTrainClassifier):
@@ -86,7 +62,7 @@ class POWER_CNN(BaseTrainClassifier):
         #tf.config.threading.set_inter_op_parallelism_threads(1)
         #tf.config.set_soft_device_placement(True)
 
-        self._model = CustomKerasClassifier(_create_dense_nn_model(X.shape[1]))
+        self._model = KerasClassifier(_create_dense_nn_model(X.shape[1]))
         callback = callbacks.EarlyStopping(
             min_delta=self.min_delta,
             monitor='loss',
@@ -94,11 +70,10 @@ class POWER_CNN(BaseTrainClassifier):
             restore_best_weights=True)
 
         print("\n Fitting New Iteration:\n")
-        X_formatted = _format(X)
         self._model.fit(
-            X_formatted,
+            _format(X),
             y,
-            batch_size=ceil(X_formatted.shape[0]/20),
+            batch_size=ceil(X.shape[0]/20),
             epochs=100,
             shuffle=True,
             callbacks=[callback],
@@ -109,14 +84,6 @@ class POWER_CNN(BaseTrainClassifier):
 
 
 def _format(X):
-    """Convert input data to the format expected by the CNN.
-    Handles both sparse and dense matrices.
-    """
-    # Check if X is a sparse matrix and convert to dense if needed
-    if sp.issparse(X):
-        X = X.toarray()  # Convert sparse to dense
-    
-    # Now perform the reshape operation
     return X.reshape((X.shape[0], X.shape[1], 1))
 
 
