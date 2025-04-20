@@ -14,13 +14,12 @@
 
 from math import ceil
 import tensorflow as tf
-import scikeras
 
 from tensorflow.keras import Sequential
 from tensorflow.keras import layers
 from tensorflow.keras import activations
 from tensorflow.keras import optimizers
-from scikeras.wrappers import KerasClassifier
+from keras.wrappers.scikit_learn import KerasClassifier
 from tensorflow.keras import callbacks
 from tensorflow.keras import backend
 
