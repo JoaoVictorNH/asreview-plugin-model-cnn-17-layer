@@ -13,7 +13,7 @@ pip install .
 from the download folder or run the follow to install directly
 
 ```bash
-python -m pip install git+https://github.com/JTeijema/asreview-plugin-model-cnn-17-layer.git
+python -m pip install git+https://github.com/JoaoVictorNH/asreview-plugin-model-cnn-17-layer.git
 ```
 
 ## Usage
