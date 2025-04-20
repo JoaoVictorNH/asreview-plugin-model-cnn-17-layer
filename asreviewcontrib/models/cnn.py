@@ -16,6 +16,7 @@ from math import ceil
 import tensorflow as tf
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
+import scipy.sparse as sp
 
 from tensorflow.keras import Sequential
 from tensorflow.keras import layers
@@ -93,10 +94,11 @@ class POWER_CNN(BaseTrainClassifier):
             restore_best_weights=True)
 
         print("\n Fitting New Iteration:\n")
+        X_formatted = _format(X)
         self._model.fit(
-            _format(X),
+            X_formatted,
             y,
-            batch_size=ceil(X.shape[0]/20),
+            batch_size=ceil(X_formatted.shape[0]/20),
             epochs=100,
             shuffle=True,
             callbacks=[callback],
@@ -107,6 +109,14 @@ class POWER_CNN(BaseTrainClassifier):
 
 
 def _format(X):
+    """Convert input data to the format expected by the CNN.
+    Handles both sparse and dense matrices.
+    """
+    # Check if X is a sparse matrix and convert to dense if needed
+    if sp.issparse(X):
+        X = X.toarray()  # Convert sparse to dense
+    
+    # Now perform the reshape operation
     return X.reshape((X.shape[0], X.shape[1], 1))
 
 
